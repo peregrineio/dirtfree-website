@@ -252,6 +252,33 @@ section { position: relative; }
 .btn .arrow { transition: transform .25s var(--ease); }
 .btn:hover .arrow { transform: translateX(4px); }
 
+/* Secondary hero offer banner — "10% Off All Other Services" */
+.hero-special-banner {
+  display: inline-flex; align-items: center; gap: 12px;
+  margin-top: 16px;
+  padding: 12px 22px;
+  background: rgba(20, 24, 33, 0.55);
+  border: 1.5px solid var(--brass);
+  border-radius: 2px;
+  color: var(--brass-glow);
+  font-weight: 600; font-size: 0.82rem;
+  letter-spacing: .08em; text-transform: uppercase;
+  backdrop-filter: blur(6px);
+  transition: all .3s var(--ease);
+}
+.hero-special-banner:hover {
+  background: var(--brass); color: var(--midnight);
+  border-color: var(--brass); transform: translateY(-2px);
+  box-shadow: 0 12px 30px -10px rgba(176, 138, 74, 0.5);
+}
+.hero-special-banner .hsb-tag {
+  font-size: 0.66rem; letter-spacing: .14em;
+  padding: 3px 8px; border: 1px solid currentColor; border-radius: 2px;
+  opacity: .85;
+}
+.hero-special-banner .arrow { transition: transform .25s var(--ease); }
+.hero-special-banner:hover .arrow { transform: translateX(4px); }
+
 /* scroll indicator */
 .scroll-cue {
   position: absolute;
