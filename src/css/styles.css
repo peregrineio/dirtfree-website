@@ -148,25 +148,79 @@ section { position: relative; }
 .menu-overlay {
   position: fixed; inset: 0; z-index: 60;
   background: var(--midnight-deep);
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   opacity: 0; pointer-events: none;
   transition: opacity .4s var(--ease);
 }
 .menu-overlay.open { opacity: 1; pointer-events: auto; }
-.menu-overlay ul { list-style: none; text-align: center; }
-.menu-overlay li { margin: 18px 0; }
-.menu-overlay a {
+/* margin:auto centers the list when it fits, and lets it scroll (no clipping) when it's taller than the viewport */
+.menu-overlay > ul { list-style: none; text-align: center; margin: auto; padding: 88px 24px 56px; width: 100%; max-width: 480px; }
+.menu-overlay > ul > li { margin: 9px 0; }
+.menu-overlay a,
+.menu-group-toggle {
   font-family: 'Fraunces', serif;
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(1.7rem, 6.2vw, 2.4rem);
+  font-weight: 400;
   color: var(--cream);
   display: inline-block;
   position: relative;
+  line-height: 1.2;
 }
-.menu-overlay a:hover { color: var(--brass-glow); }
+.menu-overlay a:hover,
+.menu-group-toggle:hover { color: var(--brass-glow); }
+
+/* ---- collapsible "Our Services" group ---- */
+.menu-group-toggle {
+  display: inline-flex; align-items: center; gap: .4em;
+  background: none; cursor: pointer;
+}
+.menu-caret {
+  font-size: .72em; color: var(--brass-glow);
+  display: inline-block; line-height: 1;
+  transform: rotate(90deg);           /* › → points down = "expandable" */
+  transition: transform .3s var(--ease);
+}
+.menu-group.open .menu-caret { transform: rotate(-90deg); }   /* points up when open */
+
+.menu-sub {
+  list-style: none;
+  max-height: 0; overflow: hidden; opacity: 0;
+  margin: 0;
+  transition: max-height .42s var(--ease), opacity .3s var(--ease), margin .3s var(--ease);
+}
+.menu-group.open .menu-sub { max-height: 620px; opacity: 1; margin: 12px 0 4px; }
+.menu-sub li { margin: 0; }
+.menu-sub a {
+  font-family: 'Fraunces', serif; font-style: italic;
+  font-size: clamp(1.05rem, 4.4vw, 1.35rem);
+  color: rgba(245, 239, 228, .72);
+  padding: 7px 0; display: inline-block;
+}
+.menu-sub a:hover { color: var(--brass-glow); }
+
+/* ---- Book Now rendered as a CTA button, phone accented ---- */
+.menu-overlay a.menu-cta {
+  margin-top: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: .92rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--midnight); background: var(--brass);
+  padding: 15px 38px; line-height: 1;
+}
+.menu-overlay a.menu-cta:hover { background: var(--brass-glow); color: var(--midnight); }
+.menu-overlay a.menu-phone {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(1.05rem, 4.6vw, 1.35rem);
+  color: var(--brass-glow); letter-spacing: .02em;
+}
 .menu-close {
-  position: absolute; top: 28px; right: 28px;
+  position: fixed; top: 24px; right: 24px; z-index: 61;
   color: var(--cream); font-size: 2rem; padding: 10px;
 }
+/* Keep the floating chat launcher from covering the menu while it's open */
+.menu-overlay.open ~ .dfc-chat { display: none; }
 
 /* ============================  HERO  ============================ */
 .hero {
@@ -207,7 +261,9 @@ section { position: relative; }
   grid-template-columns: 1fr;
   gap: 40px;
   width: 100%;
-  padding: 100px 0 60px;
+  /* keep the container's 28px side gutter — only set top/bottom here
+     (a `padding` shorthand would zero out the sides and run the hero edge-to-edge) */
+  padding: 100px 28px 60px;
 }
 .hero-content { max-width: 880px; }
 .hero h1 {
@@ -1101,4 +1157,63 @@ section { position: relative; }
 /* On narrow viewports, the desktop dropdown is hidden; mobile menu has the full city list */
 @media (max-width: 880px) {
   .nav-links .nav-dropdown-menu { display: none !important; }
+}
+
+/* ============================================================
+   MOBILE REFINEMENT PASS (2026-06-26)
+   Consistent side gutters, balanced vertical rhythm, full-width
+   tap targets, no overlapping elements. Site-wide via shared classes.
+   ============================================================ */
+@media (max-width: 600px) {
+  /* One unified side gutter everywhere (was a mix of 28px + 0px in the hero) */
+  .container, .container-narrow, .container-wide,
+  .hero-grid { padding-left: 22px; padding-right: 22px; }
+
+  /* Lighter section rhythm so phones don't get giant empty bands */
+  .section-pad { padding: 64px 0; }
+
+  /* ---------- HOME HERO ---------- */
+  .hero { min-height: 100svh; }
+  .hero-grid { padding-top: 90px; padding-bottom: 52px; gap: 28px; }
+  .hero h1 { font-size: clamp(2.2rem, 8.5vw, 3rem); margin: 16px 0 18px; }
+  .hero .lede { margin-bottom: 26px; }
+  .hero-ctas { gap: 12px; }
+  .hero-ctas .btn { flex: 1 1 100%; justify-content: center; }
+  .hero-special-banner { width: 100%; justify-content: center; margin-top: 14px; }
+  .hero-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 18px; margin-top: 30px; }
+  .hero-meta-item strong { font-size: 1.5rem; }
+  /* the absolute scroll cue overlaps the stat grid on phones — drop it */
+  .scroll-cue { display: none; }
+
+  /* ---------- INTERIOR PAGE HERO ---------- */
+  .page-hero { padding: 128px 0 60px; }
+  .page-hero-meta { margin-top: 38px; gap: 22px; padding-top: 26px; }
+
+  /* ---------- BUTTONS ---------- */
+  .btn { padding: 16px 24px; }
+
+  /* ---------- CARD INTERIORS (trim heavy desktop padding) ---------- */
+  .process-step { padding: 34px 24px; }
+  .svc-card { padding: 36px 26px; }
+  .svc-card .svc-thumb { width: calc(100% + 52px); margin: -36px -26px 24px; } /* keep thumb flush to new padding */
+  .area-tile { padding: 30px 24px; }
+  .review-card { padding: 30px 24px; }
+
+  /* ---------- SECTION HEADS (pull in big bottom margins) ---------- */
+  .timeline-section .section-head { margin-bottom: 52px; }
+  .timeline-section { padding: 72px 0; }
+  .process .head, .areas-section .head, .reviews-section .review-feature { margin-bottom: 44px; }
+  .review-grid { margin-top: 56px; padding-top: 48px; }
+
+  /* ---------- COMPARE TABLE (fit instead of squash) ---------- */
+  .compare { font-size: .86rem; }
+  .compare th, .compare td { padding: 12px 12px; }
+
+  /* ---------- FINAL CTA ---------- */
+  .final-cta .ctas { flex-direction: column; }
+  .final-cta .ctas .btn { width: 100%; justify-content: center; }
+
+  /* ---------- FOOTER ---------- */
+  .footer { padding-top: 72px; }
+  .footer .bottom { flex-direction: column; align-items: flex-start; gap: 10px; }
 }

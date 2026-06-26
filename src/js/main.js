@@ -21,11 +21,29 @@
   const overlay = document.querySelector('.menu-overlay');
   const closeBtn = document.querySelector('.menu-close');
   if (hamburger && overlay) {
+    const groups = overlay.querySelectorAll('.menu-group');
     const open = () => { overlay.classList.add('open'); document.body.style.overflow = 'hidden'; };
-    const close = () => { overlay.classList.remove('open'); document.body.style.overflow = ''; };
+    const close = () => {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      // collapse any expanded submenu so the menu reopens clean
+      groups.forEach(g => {
+        g.classList.remove('open');
+        const t = g.querySelector('.menu-group-toggle');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      });
+    };
     hamburger.addEventListener('click', open);
     if (closeBtn) closeBtn.addEventListener('click', close);
     overlay.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+    // collapsible "Our Services" group(s) — accordion toggle
+    overlay.querySelectorAll('.menu-group-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.closest('.menu-group');
+        const expanded = group.classList.toggle('open');
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      });
+    });
   }
 
   /* ========== scroll reveals ========== */
